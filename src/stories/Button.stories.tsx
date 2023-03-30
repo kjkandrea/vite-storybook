@@ -2,6 +2,8 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import { Button } from './Button';
+import {userEvent, within, waitFor } from "@storybook/testing-library";
+import { expect } from "@storybook/jest";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -9,7 +11,7 @@ export default {
   component: Button,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
-    backgroundColor: { control: 'color' },
+    backgroundColor: { control: 'color' }
   },
 } as ComponentMeta<typeof Button>;
 
@@ -38,4 +40,18 @@ export const Small = Template.bind({});
 Small.args = {
   size: 'small',
   label: 'Button',
+};
+
+export const Clickable = Template.bind({});
+
+Clickable.args = {
+  label: 'Button',
+};
+
+Clickable.play = async ({ args, canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(await canvas.getByText(args.label));
+
+  await waitFor(() => expect(args?.onClick).toHaveBeenCalled());
 };
